@@ -7,3 +7,13 @@
   <li>Graph Output</li>
   <li>Greedy</li>
   <li>Hash</li>
+  <li>Linklist</li>
+  <li>Mathematical</li>
+  <li>Search</li>
+  <li>Shortest Distance</li>
+  <li>Simple Simulate</li>
+  <li>Sort</li>
+  <li>String</li>
+  <li>Tree</li>
+  <li>Two Points</li>
+</dir>

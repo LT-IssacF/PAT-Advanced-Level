@@ -5,13 +5,13 @@
 using namespace std;
 struct node {
     int v, w, dis;
-};
-vector<vector<node>> G;
+}; // v为城市号，w为救援队数量点权，dis为距离边权
+vector<vector<node>> G; // 邻接表
 vector<int> d, pathNum, teamGather, tempTeam;
 vector<bool> visit;
 
 void Dijkstra( int N, int city1 ) { // city1为起始顶点
-    fill( d.begin( ), d.end( ), INF );
+    fill( d.begin( ), d.end( ), INF ); // INF意味不可达
     fill( pathNum.begin( ), pathNum.end( ), 0 );
     fill( teamGather.begin( ), teamGather.end( ), 0 );
     fill( visit.begin( ), visit.end( ), false );
@@ -59,7 +59,7 @@ int main( ) {
     visit.resize( N );
     for( int i = 0, tempTeamCnt; i < N; i++ ) {
         cin >> tempTeamCnt;
-        tempTeam.push_back( tempTeamCnt );
+        tempTeam.push_back( tempTeamCnt ); // 城市i有tempTeamCnt个救援队
     }
     node temp;
     for( int i = 0, c1 = 0, c2 = 0, dis = 0; i < M; i++ ) {
@@ -71,7 +71,8 @@ int main( ) {
         temp.v = c1;
         temp.w = tempTeam[c1];
         G[c2].push_back( temp );
-    }
+    } // G[c1][i].v表示c1到其连通的第i个城市(i从0开始)的城市号
+    // G[c1][i].dis表示c1到其连通的第i个城市的距离，G[c1][i].w表示从c1到其连通的第i个城市可以带上该城市内的w个救援队
     Dijkstra( N, city1 );
     cout << pathNum[city2] << " " << teamGather[city2];
 }

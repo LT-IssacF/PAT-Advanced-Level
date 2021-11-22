@@ -9,7 +9,7 @@ struct node {
 vector<vector<node>> G; // 邻接表
 vector<int> d, pathNum, teamGather, tempTeam;
 vector<bool> visit;
-
+// d储存最短路径长度，pathNum储存最短路径数量，teamGather储存能带的队伍数量
 void Dijkstra( int N, int city1 ) { // city1为起始顶点
     fill( d.begin( ), d.end( ), INF ); // INF意味不可达
     fill( pathNum.begin( ), pathNum.end( ), 0 );
@@ -31,7 +31,7 @@ void Dijkstra( int N, int city1 ) { // city1为起始顶点
         visit[u] = true; // 容易忘写
         int size = G[u].size( );
         for( int j = 0, v = 0; j < size; j++ ) {
-            v = G[u][j].v;
+            v = G[u][j].v; // 城市号
             if( visit[v] == false ) {
                 if( d[u] + G[u][j].dis < d[v] ) { // 更新最短路径
                     d[v] = d[u] + G[u][j].dis;

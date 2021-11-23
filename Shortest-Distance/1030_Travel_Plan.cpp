@@ -4,11 +4,11 @@
 #define INF 0x3fffffff
 using namespace std;
 struct node {
-    int v, dis, cost;
+    int v, dis, cost; // 边权有dis和cost两个
 };
-vector<vector<node>> G;
-vector<int> d, c, pre;
-vector<bool> visit;
+vector<vector<node>> G; // 邻接表
+vector<int> d, c, pre; // 分别是最短路径，花费，和保存的路径
+vector<bool> visit; // 访问标记数组
 
 void Dijkstra( int N, int S ) { // S为开始顶点
     fill( d.begin( ), d.end( ), INF );
@@ -46,14 +46,14 @@ void Dijkstra( int N, int S ) { // S为开始顶点
     }
 }
 
-void DFS( int S, int v ) {
-    if( S == v ) {
-        cout << S << " ";
+void DFS( int S, int v ) { // 递归地回溯路径
+    if( S == v ) { // 回溯到出发点了
+        cout << S << " "; // 这一块执行完就开始一层一层解递归了
         return;
     }
     DFS( S, pre[v] );
-    cout << v << " ";
-}
+    cout << v << " "; // 由深到浅解递归
+} // 这个写法很多要求输出路径的题都可以用
 
 int main( ) {
     int N, M, S, D;
@@ -70,7 +70,8 @@ int main( ) {
         G[city1].push_back( temp );
         temp.v = city1;
         G[city2].push_back( temp );
-    }
+    } // G[city1][i].v表示city1到其连通的第i个城市(i从0开始)的城市号
+    // G[city1][i].dis表示city1到其连通的第i个城市的距离，G[city1][i].cost表示从city1到其连通的第i个城市的花费
     Dijkstra( N, S );
     DFS( S, D );
     cout << d[D] << " " << c[D];

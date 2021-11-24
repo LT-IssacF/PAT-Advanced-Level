@@ -8,7 +8,7 @@
 * Graph-Output
 * Greedy
 * Hash
-* Linklist
+* [Linklist](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Linklist)
 * Mathematical
 * Search
 * [Shortest-Distance](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Shortest-Distance)

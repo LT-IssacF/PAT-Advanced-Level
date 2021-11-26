@@ -4,25 +4,25 @@
 #define MAX 0x3fffffff
 using namespace std;
 struct node {
-    int v, dis;
+    int v, dis; // 编号，边权
 } temp;
-vector<vector<node>> G;
+vector<vector<node>> G; // 邻接表
 vector<int> d;
 vector<bool> visit;
 
-int GetV( char str[], int N ) {
+int GetV( char str[], int N ) { // 输入转换函数
     int v = 0, exponent = 1, length = strlen( str );
-    for( int i = length - 1; i >= 1; i-- ) {
+    for( int i = length - 1; i >= 1; i-- ) { // 从后面往前面算，留最前面的0号位
         v += ( str[i] - '0' ) * exponent;
         exponent *= 10;
     }
-    if( str[0] == 'G' )
-        return v + N;
-    v += ( str[0] - '0' ) * exponent;
+    if( str[0] == 'G' ) // 是加油站
+        return v + N; // 从N开始单独编号
+    v += ( str[0] - '0' ) * exponent; // 是房屋就从1开始正常编号
     return v;
 }
 
-void Dijkstra( int N, int M, int s ) {
+void Dijkstra( int N, int M, int s ) { // 最直白的一类迪哥算法不多讲
     fill( d.begin( ), d.end( ), MAX );
     fill( visit.begin( ), visit.end( ), false );
     d[s] = 0;
@@ -50,7 +50,7 @@ void Dijkstra( int N, int M, int s ) {
 int main( ) {
     int N, M, K, D;
     cin >> N >> M >> K >> D;
-    G.resize( N + M + 1 );
+    G.resize( N + M + 1 ); // 房屋是从1开始编号的
     d.resize( N + M + 1 );
     visit.resize( N + M + 1 );
     char city1[5], city2[5];
@@ -80,7 +80,7 @@ int main( ) {
                 m = d[i];
             total += d[i];
         }
-        if( flag == false )
+        if( flag == false ) // 不用管这个加油站
             continue;
         avgDis = 1.0 * total / N;
         if( m > minDis ) {

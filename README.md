@@ -13,7 +13,7 @@
 * Search
 * [Shortest-Distance](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Shortest-Distance)
 * Simple-Simulate
-* Sort
+* [Sort](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Sort)
 * String
 * [Tree](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Tree)
 * Two-Points

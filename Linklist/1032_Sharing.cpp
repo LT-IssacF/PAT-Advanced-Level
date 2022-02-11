@@ -1,37 +1,34 @@
 #include <iostream>
 #include <cstdio>
+#define MAX 100020
 using namespace std;
-// 静态链表类
-struct Node {
-    int Next;
-    char Data;
-    bool Flag; // 用来标记结点是否在链上
-    Node( ) {
-        Flag = false;
-    }
-} Temp[100020]; // 下标作为本结点的地址
+struct node {
+    int next;
+    char data;
+    bool flag = false;
+} list[MAX];
 
 int main( ) {
-    int A_start, B_start, N;
-    cin >> A_start >> B_start >> N;
-    int Address = 0, next = 0;
-    char data = '0';
-    for( int i = 0; i < N; i++ ) {
-        scanf( "%d %c %d", &Address, &data, &next );
-        Temp[Address].Data = data;
-        Temp[Address].Next = next;
+    int start, start2, N;
+    cin >> start >> start2 >> N;
+    for( int i = 0, address = 0; i < N; i++ ) {
+        scanf( "%d ", &address );
+        scanf( "%c %d", &list[address].data, &list[address].next );
+        char c = getchar( );
     }
-    int p = A_start;
-    while( p != -1 ) { // 单遍历第一条链表
-        Temp[p].Flag = true;
-        p = Temp[p].Next;
+    int p = start;
+    while( p != -1 ) { // 遍历第一条链表
+        list[p].flag = true; // 标记
+        p = list[p].next;
     }
-    for( p = B_start; p != -1; p = Temp[p].Next )
-        if( Temp[p].Flag == true ) // 此结点在第一次遍历就标记了说明为结果
-            break;
-    if( p != -1 )
+    p = start2;
+    while( p != -1 && list[p].flag == false ) {
+        p = list[p].next;
+    } // 此结点在第一次遍历就标记了说明为结果
+    if( p == -1 ) {
+        cout << -1;
+    } else {
         printf( "%05d", p );
-    else
-        cout << "-1";
+    }
     return 0;
 }

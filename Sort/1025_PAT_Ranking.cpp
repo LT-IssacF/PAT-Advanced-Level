@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 struct Record {
-    char id[13];
+    char id[14];
     int grade, final_rank, location_number, local_rank;
 } temp;
 
@@ -23,10 +23,8 @@ int main( ) {
     vector<Record> stu;
     for( int i = 0, K = 0; i < N; i++ ) {
         scanf( "%d", &K );
-        char c = getchar( );
         for( int j = 0; j < K; j++ ) {
             scanf( "%s %d", &temp.id, &temp.grade );
-            char c = getchar( );
             temp.location_number = i + 1;
             stu.emplace_back( temp );
         }

@@ -1,53 +1,57 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <vector>
 #include <algorithm>
-#define MAX 30010
 using namespace std;
-struct student {
-    char id[15];
-    int score;
-    int location_num; // 考场号
-    int local_rank; // 本考场排名
-    int final_rank; // 全场排名
-} stu[MAX];
+struct Record {
+    char id[13];
+    int grade, final_rank, location_number, local_rank;
+} temp;
 
-bool cmp( student a, student b ) {
-    if( a.score != b.score )
-        return a.score > b.score;
-    else
+bool cmp( const Record &a, const Record &b ) {
+    if( a.grade != b.grade ) {
+        return a.grade > b.grade;
+    } else {
         return strcmp( a.id, b.id ) < 0;
+    }
 }
 
-int main() {
-    int N, K, total = 0; // 考生总数
+int main( ) {
+    int N;
     cin >> N;
-    for( int location = 1; location <= N; location++ ) {
-        cin >> K;
-        for( int person = 0; person < K; person++ ) {
-            cin >> stu[total].id >> stu[total].score;
-            stu[total].location_num = location;
-            total++;
+    vector<Record> stu;
+    for( int i = 0, K = 0; i < N; i++ ) {
+        scanf( "%d", &K );
+        char c = getchar( );
+        for( int j = 0; j < K; j++ ) {
+            scanf( "%s %d", &temp.id, &temp.grade );
+            char c = getchar( );
+            temp.location_number = i + 1;
+            stu.emplace_back( temp );
         }
-        sort( stu + ( total - K ), stu + total, cmp ); // 单独考场排序
-        stu[total - K].local_rank = 1; // 每个考场的第一名
-        for( int i = 0; i < K;i++ ) { // 获得本考场排名
-            if( stu[total - K + i + 1].score == stu[total - K + i].score )
-                stu[total - K + i + 1].local_rank = stu[total - K + i].local_rank;
-            else
-                stu[total - K + i + 1].local_rank = i + 2;
+        vector<Record>::iterator it = stu.end( ) - K;
+        sort( it, stu.end( ), cmp ); // 单独考场排序
+        it++->local_rank = 1;
+        for( int i = 1; i < K; i++, it++ ) {
+            if( it->grade == ( it - 1 )->grade ) {
+                it->local_rank = ( it - 1 )->local_rank;
+            } else {
+                it->local_rank = i + 1;
+            }
         }
     }
-    sort( stu, stu + total, cmp ); // 所有考生排名
-    stu[0].final_rank = 1; // 总排名第一名
-    for( int i = 1; i < total; i++ ) { // 获得总排名
-        if( stu[i].score == stu[i - 1].score )
+    cout << stu.size( ) << endl;
+    sort( stu.begin( ), stu.end( ), cmp ); // 所有考生排名
+    stu[0].final_rank = 1;
+    printf( "%s %d %d %d\n", stu[0].id, stu[0].final_rank, stu[0].location_number, stu[0].local_rank );
+    for( int i = 1; i < stu.size( ); i++ ) {
+        if( stu[i].grade == stu[i - 1].grade ) {
             stu[i].final_rank = stu[i - 1].final_rank;
-        else
+        } else {
             stu[i].final_rank = i + 1;
+        }
+        printf( "%s %d %d %d\n", stu[i].id, stu[i].final_rank, stu[i].location_number, stu[i].local_rank );
     }
-    cout << total << endl;
-    for( int i = 0; i < total; i++ )
-        printf( "%s %d %d %d\n", stu[i].id, stu[i].final_rank, stu[i].location_num, stu[i].local_rank );
     return 0;
 }

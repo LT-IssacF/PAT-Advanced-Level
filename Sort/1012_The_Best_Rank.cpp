@@ -1,64 +1,60 @@
 #include <iostream>
-#include <cmath>
+#include <cstdio>
 #include <vector>
+#include <map>
 #include <algorithm>
-#define MAX 0x3fffffff
+#define WORSE 0xffff
 using namespace std;
-struct student {
-    string ID;
-    int grade[4]; // A C M E
-    int rank[4];
+struct Record {
+    int id, best_sub, best_rank = WORSE;
+    int grade[4], rank[4]; // A C M E
 };
-vector<student> stu;
+map<int, Record> ans;
 
 int main( ) {
     int N, M;
     cin >> N >> M;
-    stu.resize( N );
-    for( int i = 0, j = 0, total = 0; i < N; i++ ) {
-        cin >> stu[i].ID;
-        for( j = 1, total = 0; j < 4; j++ ) {
-            cin >> stu[i].grade[j];
-            total += stu[i].grade[j];
+    vector<Record> stu( N );
+    for( int i = 0; i < N; i++ ) {
+        scanf( "%d", &stu[i].id );
+        for( int j = 1; j <= 3; j++ ) {
+            scanf( "%d", &stu[i].grade[j] );
+            stu[i].grade[0] += stu[i].grade[j];
         }
-        stu[i].grade[0] = round( total / 3.0 ); // 下标0存放A
     }
-    vector<string> check( M );
-    for( int i = 0; i < M; i++ )
-        cin >> check[i];
     for( int tag = 0; tag < 4; tag++ ) { // 获取4门成绩的排名
         sort( stu.begin( ), stu.end( ),
-            [tag] ( student a, student b ) { // 按每门成绩降序排序
-                return a.grade[tag] > b.grade[tag];
-                } );
+            [tag] ( const Record &a, const Record &b ) {
+            return a.grade[tag] > b.grade[tag];
+        } ); // 按每门成绩降序排序
         stu[0].rank[tag] = 1; // 最高分第一名
-        for( int j = 1; j < N; j++ ) {
-            if( stu[j].grade[tag] == stu[j - 1].grade[tag] )
-                stu[j].rank[tag] = stu[j - 1].rank[tag];
-            else
-                stu[j].rank[tag] = j + 1;
+        if( stu[0].best_rank > 1 ) // 如果他最好的排名不是第一的话就要更新
+            stu[0].best_rank = 1, stu[0].best_sub = tag;
+        for( int i = 1; i < N; i++ ) {
+            if( stu[i].grade[tag] == stu[i - 1].grade[tag] ) {
+                stu[i].rank[tag] = stu[i - 1].rank[tag];
+            } else {
+                stu[i].rank[tag] = i + 1;
+            }
+            if( stu[i].best_rank > stu[i].rank[tag] ) // 同理
+                stu[i].best_rank = stu[i].rank[tag], stu[i].best_sub = tag;
         }
     }
-    for( int i = 0, j = 0, k = 0, min = MAX, flag = MAX; i < M; i++ ) {
-        min = MAX, flag = MAX;
-        for( j = 0; j < N; j++ ) {
-            if( check[i] == stu[j].ID ) {
-                for( k = 0; k < 4; k++ ) {
-                    if( min > stu[j].rank[k] ) { // 找4门成绩中排名最高的
-                        min = stu[j].rank[k];
-                        flag = k + 1; // 标记
-                    }
-                }
-                cout << min << " ";
-                if( flag == 1 ) cout << "A";
-                else if( flag == 2 ) cout << "C";
-                else if( flag == 3 ) cout << "M";
-                else cout << "E";
-                cout << '\n';
-                break; // 退出找这个学生的循环
+    for( int i = 0; i < N; i++ ) // 建立映射
+        ans[stu[i].id] = stu[i];
+    for( int i = 0, id = 0; i < M; i++ ) {
+        scanf( "%d", &id );
+        map<int, Record>::iterator it = ans.find( id );
+        if( it == ans.end( ) ) {
+            printf( "N/A\n" );
+        } else {
+            printf( "%d ", it->second.best_rank );
+            switch( it->second.best_sub ) {
+            case 0: printf( "A\n" ); break;
+            case 1: printf( "C\n" ); break;
+            case 2: printf( "M\n" ); break;
+            case 3: printf( "E\n" ); break;
             }
-            if( j == N - 1 ) // 没这个学生
-                cout << "N/A" << endl;
         }
     }
     return 0;

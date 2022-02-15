@@ -6,7 +6,7 @@
 * [Dynamic-Programing](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Dynamic-Programing)
 * [Graph](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Graph)
 * Graph-Output
-* Greedy
+* [Greedy](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Greedy)
 * [Iteration](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Iteration)
 * Hash
 * [Linklist](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Linklist)

@@ -1,27 +1,24 @@
 #include <iostream>
+#include <cstdio>
 #include <vector>
-#include <cmath>
-#define MAX 10020
 using namespace std;
 vector<vector<int>> G;
-bool visit[MAX] = { false };
-int tempDepth = -1;
-
-void DFS( int now, int depth ) {
-    tempDepth = max( depth, tempDepth ); // 更新高度
+vector<bool> visit;
+int tempDepth = 1; // 记录从每个结点开始深度遍历的最大深度
+void DFS( const int &now, const int &depth ) {
+    if( depth > tempDepth ) // 更新高度
+     tempDepth = depth;
     visit[now] = true;
-    int size = G[now].size( );
-    for( int i = 0; i < size; i++ ) {
+    for( int i = 0; i < G[now].size( ); i++ )
         if( visit[G[now][i]] == false )
             DFS( G[now][i], depth + 1 );
-    }
 }
 
-int DFS_Travels( ) {
-    int size = G.size( ), subGraph = 0;
-    for( int i = 1; i < size; i++ ) {
+int DFS_Travels( const int &start, const int &N ) {
+    int subGraph = 0;
+    for( int i = start; i <= N; i++ ) {
         if( visit[i] == false ) {
-            DFS( i, 0 );
+            DFS( i, 1 );
             subGraph++;
         }
     }
@@ -32,29 +29,28 @@ int main( ) {
     int N;
     cin >> N;
     G.resize( N + 1 );
-    for( int i = 1, v = 0, next = 0; i < N; i++ ) {
-        cin >> v >> next;
-        G[v].push_back( next );
-        G[next].push_back( v );
-    }
-    int subGraph = DFS_Travels( );
-    // N个结点N-1条边，只能是一棵树，除非不是连通图
+    visit.resize( N + 1 );
+    for( int i = 1, v1 = 0, v2 = 0; i < N; i++ ) {
+        scanf( "%d %d", &v1, &v2 );
+        G[v1].push_back( v2 );
+        G[v2].push_back( v1 );
+    } // N个结点N-1条边，只能是一棵树，除非不是连通图
+    int subGraph = DFS_Travels( 1, N );
     if( subGraph > 1 )
         cout << "Error: " << subGraph << " components";
     else {
-        vector<int> depth;
-        depth.resize( N + 1 ); // 记录以i为根的树的高度
-        int maxDepth = -1; // 保存最大高度
-        for( int i = 1; i < N + 1; i++ ) {
-            tempDepth = -1;
-            fill( visit, visit + MAX, false );
-            DFS( i, 0 ); // 从结点i开始深度遍历得到以i为根的树的高度
-            depth[i] = tempDepth;
-            maxDepth = max( maxDepth, tempDepth );
+        vector<vector<int>> depth( N + 1 ); // 保存不同深度的根结点，N个结点最大深度为N
+        int maxDepth = 1; // 最大深度
+        for( int i = 1; i <= N; i++ ) {
+            tempDepth = 1;
+            fill( visit.begin( ), visit.end( ), false );
+            DFS( i, 1 ); // 从结点i开始深度遍历得到以i为根的树的深度
+            depth[tempDepth].push_back( i );
+            if( tempDepth > maxDepth )
+                maxDepth = tempDepth;
         }
-        for( int i = 1; i < N + 1; i++ )
-            if( depth[i] == maxDepth )
-                cout << i << endl;
+        for( int i = 0; i < depth[maxDepth].size( ); i++ )
+            printf( "%d\n", depth[maxDepth][i] );
     }
     return 0;
 }

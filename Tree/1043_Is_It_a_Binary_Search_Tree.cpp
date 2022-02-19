@@ -1,85 +1,89 @@
 #include <iostream>
+#include <cstdio>
 #include <vector>
 using namespace std;
 typedef struct BiNode {
-    int Data;
-    BiNode *Left, *Right;
+    int data;
+    BiNode *lchild, *rchild;
 } BiNode, *BiTree;
 vector<int> input, pre, post, mirPre, mirPost;
-// 插入
-void Insert( BiTree &T, int key ) {
-    if( T == NULL ) { // 插入位置
-        T = ( BiTree ) malloc( sizeof( struct BiNode ) );
-        T->Data = key;
-        T->Left = T->Right = NULL;
+void Insert( BiTree &T, const int &key ) { // 插入
+    if( T == NULL ) {  // 插入位置
+        T = ( BiTree ) malloc ( sizeof( BiNode ) );
+        T->data = key;
+        T->lchild = T->rchild = NULL;
+        return;
+    } else if( key < T->data ) {
+        Insert( T->lchild, key );
+    } else {
+        Insert( T->rchild, key );
     }
-    else if( key < T->Data )
-        Insert( T->Left, key );
-    else
-        Insert( T->Right, key );
-}
-// 前序遍历序列
-void PreOrder( BiTree T, vector<int> &sequence ) {
-    if( !T )
-        return;
-    sequence.push_back( T->Data );
-    PreOrder( T->Left, sequence );
-    PreOrder( T->Right, sequence );
-}
-// 后序遍历序列
-void PostOrder( BiTree T, vector<int> &sequence ) {
-    if( !T )
-        return;
-    PostOrder( T->Left, sequence );
-    PostOrder( T->Right, sequence );
-    sequence.push_back( T->Data );
-}
-// 镜像数的前序遍历序列
-void Mir_PreOrder( BiTree T, vector<int> &sequence ) {
-    if( !T )
-        return;
-    sequence.push_back( T->Data );
-    Mir_PreOrder( T->Right, sequence );
-    Mir_PreOrder( T->Left, sequence );
-}
-// 镜像数的后序遍历序列
-void Mir_PostOrder( BiTree T, vector<int> &sequence ) {
-    if( !T )
-        return;
-    Mir_PostOrder( T->Right, sequence );
-    Mir_PostOrder( T->Left, sequence );
-    sequence.push_back( T->Data );
 }
 
-void Print( vector<int> sequence ) {
-    int size = sequence.size( );
-    cout << sequence[0];
-    for( int i = 1; i < size; i++ )
-        cout << " " << sequence[i];
+void PreOrder( const BiTree &T ) {
+    if( T == NULL )
+        return;
+    pre.push_back( T->data );
+    PreOrder( T->lchild );
+    PreOrder( T->rchild );
+}
+
+void PostOrder( const BiTree &T ) {
+    if( T == NULL )
+        return;
+    PostOrder( T->lchild );
+    PostOrder( T->rchild );
+    post.push_back( T->data );
+}
+
+void MirPreOrder( const BiTree &T ) {
+    if( T == NULL )
+        return;
+    mirPre.push_back( T->data );
+    MirPreOrder( T->rchild );
+    MirPreOrder( T->lchild );
+}
+
+void MirPostOrder( const BiTree &T ) {
+    if( T == NULL )
+        return;
+    MirPostOrder( T->rchild );
+    MirPostOrder( T->lchild );
+    mirPost.push_back( T->data );
+}
+
+void Print( const vector<int> &sequence ) {
+    for( const int &i : sequence ) {
+        if( i != sequence[0] )
+            printf( " " );
+        printf( "%d", i );
+    }
 }
 
 int main( ) {
     int N;
     cin >> N;
     BiTree T = NULL;
-    for( int i = 0, temp = 0; i < N; i++ ) {
-        scanf( "%d", &temp );
-        input.push_back( temp );
-        Insert( T, temp );
+    for( int i = 0, data = 0; i < N; i++ ) {
+        scanf( "%d", &data );
+        Insert( T, data ); // 每次调用都从树根处递归建树
+        input.push_back( data );
     }
-    PreOrder( T, pre );
-    PostOrder( T, post );
-    Mir_PreOrder( T, mirPre );
-    Mir_PostOrder( T, mirPost );
-    if( pre == input ) { // 原树既是
-        cout << "YES" << endl;
+    PreOrder( T );
+    if( pre == input ) {
+        printf( "YES\n" );
+        PostOrder( T );
         Print( post );
+    } else {
+        MirPreOrder( T );
+        if( mirPre == input ) {
+            printf( "YES\n" );
+            MirPostOrder( T );
+            Print( mirPost );
+        }
+        else {
+            printf( "NO" );
+        }
     }
-    else if( mirPre == input ) { // 原树的镜像树是
-        cout << "YES" << endl;
-        Print( mirPost );
-    }
-    else
-        cout << "NO";
     return 0;
 }

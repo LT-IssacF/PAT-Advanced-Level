@@ -18,7 +18,7 @@ int main( ) {
     } );
     for( int i = 0; i < N; i++ )
         ans += v[i];
-    while( ans.length( ) > 1 && ans[0] == '0' )
+    while( ans.length( ) > 0 && ans[0] == '0' )
         ans.erase( ans.begin( ) );
     cout << ( ans.length( ) > 0 ? ans : 0 );
     return 0;

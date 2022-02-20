@@ -1,7 +1,7 @@
 <h1 align = "center">PAT-Advanced-Level</h1>
 
 * Advanced-Simulate
-* Binary-Search
+* [Binary-Search](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Binary_Search)
 * [Dynamic-Programing](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Dynamic-Programing)
 * [Graph](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Graph)
 * Graph-Output

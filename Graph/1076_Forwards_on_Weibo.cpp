@@ -1,63 +1,53 @@
 #include <iostream>
+#include <cstdio>
 #include <vector>
 #include <queue>
 using namespace std;
 struct node {
     int v, level;
 };
-vector<vector<node>> G;
-vector<bool> visitQueue;
-
-int BFS( int L, int user ) { // 每次BFS不改变原图数据，user为起始结点
+vector<vector<node>> G; // G[i][j].v表示i的第j个粉丝是v
+vector<bool> visit;
+int BFS( const int &up, const int &L ) {
     queue<node> q;
-    int numOfShare = 0; // 转发过的人
-    node start;
-    start.v = user, start.level = 0;
-    q.push( start );
-    visitQueue[start.v] = true;
+    q.push( node{ up, 0 } );
+    visit[up] = true;
+    int ans = 0;
     while( !q.empty( ) ) {
-        start = q.front( );
-        if( start.level >= L ) // 易错点（最大转发次数）
-            break;
+        node front = q.front( );
         q.pop( );
-        int size = G[start.v].size( );
-        for( int i = 0; i < size; i++ ) {
-            node fan = G[start.v][i];
-            fan.level = start.level + 1;
-            if( visitQueue[fan.v] == false ) { // 易错点
-                q.push( fan );
-                visitQueue[fan.v] = true;
-                numOfShare++;
+        if( front.level > L )
+            break;
+        ans++;
+        for( int i = 0, v = 0; i < G[front.v].size( ); i++ ) {
+            v = G[front.v][i].v;
+            if( visit[v] == false ) {
+                visit[v] = true; // 因为图中可能有环，为了避免将一个结点多次入队，所以必须在入队时就修改标记
+                q.push( node{ v, front.level + 1 } );
             }
         }
     }
-    return numOfShare;
+    return ans;
 }
 
 int main( ) {
     int N, L, K;
     cin >> N >> L;
     G.resize( N + 1 );
-    visitQueue.resize( N + 1 );
-    node temp;
-    for( int i = 1, j = 0, cnt = 0, followedV = 0; i < N + 1; i++ ) {
-        cin >> cnt;
-        temp.v = i;
-        for( j = 0; j < cnt; j++ ) {
-            cin >> followedV;
-            G[followedV].push_back( temp );
+    visit.resize( N + 1 );
+    for( int i = 1, cnt = 0; i <= N; i++ ) {
+        scanf( "%d", &cnt );
+        for( int j = 0, up = 0; j < cnt; j++ ) {
+            scanf( "%d", &up );
+            G[up].emplace_back( node{ i, 0 } );
         }
     }
-    vector<int> outcome;
     cin >> K;
-    for( int i = 0, j = 0; i < K; i++ ) {
-        cin >> j;
-        fill( visitQueue.begin( ), visitQueue.end( ), false );
-        int numOfShare = BFS( L, j );
-        outcome.push_back( numOfShare );
+    for( int i = 0, up = 0, ans = 0; i < K; i++ ) {
+        fill( visit.begin( ), visit.end( ), false );
+        scanf( "%d", &up );
+        ans = BFS( up, L );
+        printf( "%d\n", ans - 1 ); // 减去up自己
     }
-    int size = outcome.size( );
-    for( int i = 0; i < size; i++ )
-        cout << outcome[i] << endl;
     return 0;
 }

@@ -1,46 +1,37 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include <cmath>
 using namespace std;
-struct node { // 邻接表
-    int data;
-    vector<int> child;
+struct node {
+    vector<int> children;
+    int product;
 };
 vector<node> tree;
-// 3个额外参数，s当前结点，ans保存结果要引用，depth递归深度
-void DFS( int s, double P, double r, double &ans, int depth ) {
-    int size = tree[s].child.size( );
-    if( size == 0 ) { // 到零售商了
-        ans += tree[s].data * ( P * pow( ( 1 + r ), depth ) );
+void DFS( const int &now, const double &r, const double &price, double &ans ) {
+    if( tree[now].children.size( ) == 0 ) { // 到零售商了
+        ans += price * tree[now].product;
         return;
     }
-    for( int i = 0; i < size; i++ ) { // 还在经销商
-        DFS( tree[s].child[i], P, r, ans, depth + 1 );
-    }
+    for( const int &v : tree[now].children )
+        DFS( v, r, price * ( 1 + r ), ans ); // 递归时顺便处理价格
 }
 
 int main( ) {
     int N;
     double P, r, ans = 0;
     cin >> N >> P >> r;
-    r /= 100; // 对收费率处理
     tree.resize( N );
-    for( int i = 0, k = 0; i < N; i++ ) {
-        tree[i].data = 0;
-        cin >> k;
-        if( k != 0 )
-            for( int j = 0, child = 0; j < k; j++ ) {
-                cin >> child;
-                tree[i].child.push_back( child );
-            }
-        else {
-            int amount;
-            cin >> amount;
-            tree[i].data = amount;
+    r /= 100; // 对收费率处理
+    for( int i = 0, value = 0; i < N; i++ ) {
+        scanf( "%d", &value );
+        for( int j = 0, child = 0; j < value; j++ ) {
+            scanf( "%d", &child );
+            tree[i].children.push_back( child );
         }
+        if( value == 0 )
+            scanf( "%d", &tree[i].product );
     }
-    DFS( 0, P, r, ans, 0 );
+    DFS( 0, r, P, ans );
     printf( "%.1f", ans );
     return 0;
 }

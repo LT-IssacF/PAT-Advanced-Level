@@ -1,135 +1,100 @@
 #include <iostream>
-#include <string>
+#include <cstdio>
 #include <vector>
 #include <map>
-#include <algorithm>
-#define MAX 0xff
 #define INF 0x3fffffff
 using namespace std;
-vector<bool> visit; // 访问标记
-map<string, int> nameToIndex; // 城市名字和编号相互转换的映射表
-map<int, string> indexToName;
-// Dijstra+DFS*****个人更喜欢这种，纯Dijstra不好理解
-int G[MAX][MAX] = { INF }; // 邻接矩阵在DFS时很方便
-vector<int>d, happiness, path, tempPath; // 储存到每个城市的最短距离，点权和路径
-vector<vector<int>> pre; // 记录前驱
-int index = 1, totalHappiness = 0, cntOfPath = 0; // index的0留给开始城市
-double avgHappiness = 0;
-// 根据编译器不同，index可能会起名冲突
-int GetIndex( int N, string name ) {
-	if( name == "ROM" )
-		return N - 1; // 最后一个位置留给ROM
-	else {
-		nameToIndex[name] = index;
-		indexToName[index] = name;
-		return index++;
-	}
+struct node {
+	int v, dis;
+};
+vector<vector<node>> G;
+vector<vector<int>> pre; // 记录最短路径上的前驱
+vector<int> d, h, path, tempPath;
+vector<bool> visit;
+map<string, int> stringToInt;
+map<int, string> intToString;
+int cnt = 1, maxHappiness = 0, pathCnt = 0;
+int GetIndex( const string &city ) { // 得到城市的编号
+	stringToInt[city] = cnt;
+	intToString[cnt] = city;
+	return cnt++;
 }
 
-void Dijstra( int N, int start ) {
+void Dijkstra( const int &N, const int &start ) {
 	fill( d.begin( ), d.end( ), INF );
 	fill( visit.begin( ), visit.end( ), false );
 	d[start] = 0;
-	for( int i = 0, u = -1, min = INF; i < N; i++ ) {
-		u = -1, min = INF;
-		for( int j = 0; j < N; j++ ) {
-			if( visit[j] == false && d[j] < min ) {
+	for( int i = 0; i < N; i++ ) {
+		int u = -1, MIN = INF;
+		for( int j = 0; j < N; j++ )
+			if( d[j] < MIN && visit[j] == false ) {
 				u = j;
-				min = d[j];
+				MIN = d[j];
 			}
-		}
 		if( u == -1 )
-			return;
+			break;
 		visit[u] = true;
-		for( int j = 0; j < N; j++ ) {
-			if( G[u][j] != INF && visit[j] == false ) { // 两个城市间有边且后者没被访问过
-				if( d[u] + G[u][j] < d[j] ) {
-					d[j] = d[u] + G[u][j];
-					pre[j].clear( ); // 清空前驱
-					pre[j].push_back( u ); // 城市u是城市j最短路径上的直接前驱
-				}
-				else if( d[u] + G[u][j] == d[j] ) {
-					pre[j].push_back( u ); // 城市j的前驱不止一个，即不止一条最短路径
+		for( int j = 0, v = 0; j < G[u].size( ); j++ ) {
+			v = G[u][j].v;
+			if( visit[v] == false ) {
+				if( d[u] + G[u][j].dis < d[v] ) { // 更新最短路径长度
+					d[v] = d[u] + G[u][j].dis;
+					pre[v].clear( ); // 清除前驱
+					pre[v].push_back( u );
+				} else if( d[u] + G[u][j].dis == d[v] ) { // 相同长度下路径不止一条即有多个前驱
+					pre[v].push_back( u );
 				}
 			}
 		}
 	}
 }
 
-void DFS( int N, int start ) {
-	if( start == 0 ) { // 深度递归到起点了
-		tempPath.push_back( start );
-		int tempTotalDis = 0, size = tempPath.size( );
-		for( int i = 0; i < size - 1; i++ ) { // eg:5条边4个结点
-			tempTotalDis += G[tempPath[i]][tempPath[i + 1]]; // 计算距离
+void DFS( const int &now, const int &start, const int &total ) { // 从ROM倒着递归回start
+	if( now == start ) {
+		pathCnt++; // 路径+1
+		tempPath.push_back( now );
+		if( total > maxHappiness ) { // 总开心度更大，更新路径，start城市没有开心度，所以不用加h[start]
+			maxHappiness = total;
+			path = tempPath; // 储存路径
+		} else if( total == maxHappiness && tempPath.size( ) < path.size( ) ) { // 开心度相等但结点数更少，即平均开心度更大
+			path = tempPath;
 		}
-		if( tempTotalDis == d[N - 1] ) { // 是通往ROM的最短路径
-			cntOfPath++; // 这样的路径+1
-			int tempTotalHappiness = 0;
-			double tempAvgHappiness = 0;
-			for( int i = 0; i < size - 1; i++ ) // 把这条路径上的点权加起来，但起点点权为0
-				tempTotalHappiness += happiness[tempPath[i]];
-			tempAvgHappiness = 1.0 * tempTotalHappiness / ( size - 1 ); // 不算起点
-			if( tempTotalHappiness > totalHappiness ) { // 注意不是直接判断平均点权的，要先判断总点权大小
-				totalHappiness = tempTotalHappiness;
-				avgHappiness = tempAvgHappiness;
-				path = tempPath;
-			}
-			else if( tempTotalHappiness == totalHappiness ) { // 总点权相等了
-				if( tempAvgHappiness > avgHappiness ) { // 再判断平均点权
-					avgHappiness = tempAvgHappiness;
-					path = tempPath;
-				}
-			}
-		}
+		tempPath.pop_back( ); // 回溯
 		return;
 	}
-	tempPath.push_back( start );
-	int size = pre[start].size( ); // 分叉数量即前驱
-	for( int i = 0; i < size; i++ ) {
-		DFS( N, pre[start][i] );
-		tempPath.pop_back( ); // 回溯到分叉处
+	tempPath.push_back( now );
+	for( int i = 0; i < pre[now].size( ); i++ ) {
+		DFS( pre[now][i], start, total + h[now] ); // 因为pre储存的前驱都是在最短路径上，所以不用判断走的路程等不等于最短路径长度即d[ROM]
 	}
-}
-
-void Print( ) {
-	int size = path.size( );
-	for( int i = size - 1; i > 0; i-- )
-		cout << indexToName[path[i]] << "->";
-	cout << indexToName[path[0]];
+	tempPath.pop_back( ); // 回溯
 }
 
 int main( ) {
-	int N, K, city1, city2;
-	string start, name1, name2;
+	int N, K;
+	string start, city, city2;
 	cin >> N >> K >> start;
-	visit.resize( N );
-	d.resize( N );
-	happiness.resize( N );
+	G.resize( N );
 	pre.resize( N );
-	nameToIndex[start] = 0;
-	indexToName[0] = start;
-	nameToIndex[string( "ROM" )] = N - 1;
-	indexToName[N - 1] = string( "ROM" );
-	for( int i = 0, num = 0; i < N - 1; i++ ) {
-		cin >> name1;
-		num = GetIndex( N, name1 );
-		cin >> happiness[num];
-	} // 处理点权并建立映射
-	fill( G[0], G[0] + MAX * MAX, INF );
-	for( int i = 0, dis = 0; i < K; i++ ) {
-		cin >> name1 >> name2 >> dis;
-		city1 = nameToIndex[name1];
-		city2 = nameToIndex[name2];
-		G[city1][city2] = dis;
-		G[city2][city1] = dis;
+	d.resize( N ), h.resize( N );
+	visit.resize( N );
+	stringToInt[start] = 0, intToString[0] = start, h[0] = 0; // 0的位置留给起点
+	for( int i = 1, happiness = 0; i < N; i++ ) {
+		cin >> city >> happiness;
+		h[GetIndex( city )] = happiness;
+	} // 在获取完城市开心度时就能建立全部城市名字与编号的映射
+	for( int i = 0, c = 0, c2 = 0, dis = 0; i < K; i++ ) {
+		cin >> city >> city2 >> dis;
+		c = stringToInt[city], c2 = stringToInt[city2];
+		G[c].emplace_back( node{ c2, dis } );
+		G[c2].emplace_back( node{ c, dis } );
 	}
-	for( int i = 0; i < N; i++ )
-		G[i][i] = 0; // 每个城市到它自己的距离都是0
-	Dijstra( N, 0 );
-	DFS( N, N - 1 );
-	cout << cntOfPath << " " << d[N - 1] << " " << totalHappiness << " " << ( int )avgHappiness << endl;
-	Print( );
+	Dijkstra( N, 0 );
+	DFS( stringToInt["ROM"], 0, 0 );
+	printf( "%d %d %d %d\n", pathCnt, d[stringToInt["ROM"]], maxHappiness, maxHappiness / ( path.size( ) - 1 ) ); 
+	cout << start;
+	for( int i = path.size( ) - 2; i > 0; i-- )
+		cout << "->" << intToString[path[i]];
+	cout << "->ROM";
 	return 0;
 }
 

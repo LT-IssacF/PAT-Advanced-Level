@@ -1,37 +1,31 @@
 #include <iostream>
+#include <cstdio>
 #include <vector>
-#define MAX 0xff
 using namespace std;
-vector<vector<int>> tree;
-int hashTable[MAX] = { 0 };
-// hashTable存储每代人的人数
-void DFS( int root, int level ) {
-    int size = tree[root].size( );
-    hashTable[level]++;
-    for( int i = 0; i < size; i++ ) {
-        DFS( tree[root][i], level + 1 );
-    }
+void DFS( vector<int> &depth, const vector<vector<int>> &tree, const int &now, const int &height ) {
+    depth[height]++;
+    for( int i = 0; i < tree[now].size( ); i++ )
+        DFS( depth, tree, tree[now][i], height + 1 );
 }
 
 int main( ) {
-    int N, M;
+    int N, M, ans = 0, height = 0;
     cin >> N >> M;
-    tree.resize( N + 1 );
-    for( int i = 0, father = 0, children = 0, K = 0; i < M; i++ ) {
-        cin >> father >> K;
-        for( int j = 0; j < K; j++ ) {
-            cin >> children;
-            tree[father].push_back( children );
+    vector<vector<int>> tree( N + 1 );
+    vector<int> depth( N + 1, 0 ); // 存储每代人的人数
+    for( int i = 0, key = 0, K = 0; i < M; i++ ) {
+        scanf( "%d %d", &key, &K );
+        for( int j = 0, child = 0; j < K; j++ ) {
+            scanf( "%d", &child );
+            tree[key].push_back( child );
         }
     }
-    DFS( 1, 1 );
-    int largestPopulation = 1, level = 1;
-    for( int i = 1; i <= N; i++ ) {
-        if( hashTable[i] > largestPopulation ) {
-            largestPopulation = hashTable[i];
-            level = i;
+    DFS( depth, tree, 1, 1 );
+    for( int i = 1; i <= N && depth[i] > 0; i++ )
+        if( depth[i] > ans ) {
+            ans = depth[i];
+            height = i;
         }
-    }
-    cout << largestPopulation << " " << level;
+    printf( "%d %d", ans, height );
     return 0;
 }

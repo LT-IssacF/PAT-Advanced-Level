@@ -1,43 +1,50 @@
 #include <iostream>
 #include <cstdio>
-#include <cmath>
-#include <queue>
 #include <vector>
+#include <queue>
+#include <cmath>
 using namespace std;
-vector<vector<int>> tree;
-int minLevel = 0x3fffffff, cnt = 0;
-// 深度遍历
-void DFS( int retailer, int level ) {
-    int size = tree[retailer].size( );
-    if( size == 0 ) { // size为0就说明是零售商
-        if( level < minLevel ) { // 记录最小经销次数
-            minLevel = level;
-            cnt = 1; // 经销商个数初始化
-        }
-        else if( level == minLevel ) // 多个经销商
+struct node {
+    int level;
+    vector<int> children;
+};
+int BFS( const int &root, int &breakLevel , vector<node> &tree ) {
+    queue<int> q;
+    q.push( root );
+    int cnt = 0;
+    while( !q.empty( ) ) {
+        int front = q.front( );
+        q.pop( );
+        if( tree[front].level > breakLevel ) // 在未访问到零售商之前是不会break的
+            break; // 同层的零售商也不会break，如果最早的零售商下一层第一个访问的也是零售商就会break
+        if( tree[front].children.size( ) == 0 ) { // 最早的零售商
             cnt++;
-        return;
-    }
-    for( int i = 0; i < size; i++ ) {
-        DFS( tree[retailer][i], level + 1 );
-    }
-}
-// 和1090一个类型，不多阐述
-int main( ) {
-    int N;
-    double P, r, price;
-    cin >> N >> P >> r;
-    tree.resize( N );
-    r /= 100;
-    for( int i = 0, j = 0, cnt = 0, child = 0; i < N; i++ ) {
-        cin >> cnt;
-        for( j = 0; j < cnt; j++ ) {
-            cin >> child;
-            tree[i].push_back( child );
+            breakLevel = tree[front].level;
+        }
+        for( int i = 0, v = 0; i < tree[front].children.size( ); i++ ) {
+            v = tree[front].children[i];
+            tree[v].level = tree[front].level + 1; // 更新高度
+            q.push( v );
         }
     }
-    DFS( 0, 0 );
-    price = P * pow( 1 + r, minLevel );
-    printf( "%.4f %d", price, cnt );
+    return cnt;
+}
+// BFS不用像DFS那样访问所有结点，而是在访问完最早的零售商那一层就break了
+int main( ) {
+    int N, cnt, breakLevel = 0x7fffffff; // 初始为最大int
+    double P, r;
+    cin >> N >> P >> r;
+    vector<node> tree( N );
+    r /= 100;
+    for( int i = 0, K = 0; i < N; i++ ) {
+        scanf( "%d", &K );
+        for( int j = 0, child = 0; j < K; j++ ) {
+            scanf( "%d", &child );
+            tree[i].children.push_back( child );
+        }
+    }
+    tree[0].level = 1;
+    cnt = BFS( 0, breakLevel, tree );
+    printf( "%.4lf %d", P * pow( ( 1 + r ), breakLevel - 1 ), cnt );
     return 0;
 }

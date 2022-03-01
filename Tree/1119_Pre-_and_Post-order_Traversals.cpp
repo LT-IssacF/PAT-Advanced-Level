@@ -1,42 +1,43 @@
 #include <iostream>
+#include <cstdio>
 #include <vector>
 using namespace std;
-vector<int> pre, in, post;
 bool flag = true;
-void GetIn( int preL, int preR, int postL, int postR ) {
-    if( preL == preR ) { // 到达一棵子树最左下的叶结点
+void GetIn( vector<int> &in, const vector<int> pre, const vector<int> post, const int &preL, const int &preR, const int &postL, const int &postR ) {
+    if( preL == preR ) { // 叶结点
         in.push_back( pre[preL] );
         return;
     }
-    if( pre[preL] == post[postR] ) { // 处理一棵子树的根结点
-        int numLeft; // 这棵子树左子树的结点个数
-        for( int i = preL + 1; i <= preR; i++ )
-            if( pre[i] == post[postR - 1] ) { // 后序序列中前一个元素就是该子树的右子树的根结点
-                numLeft = i - preL - 1; // 所以在前序中就可以求出该子树左子树的结点个数
+    if( pre[preL] == post[postR] ) { // 处理根结点
+        int i, numLeft; // 左子树的结点个数
+        for( i = preL + 1; i <= preR; i++ ) // i从当前根结点的下一个开始
+            if( pre[i] == post[postR - 1] ) { // i已经到了当前根结点的右子树，post[postR - 1]是当前根结点的右子树
+                numLeft = i - preL - 1; // 在前序中就可以求出左子树的结点个数
                 break;
             }
-        if( numLeft != 0 ) // 左子树不空就递归处理这棵子树
-            GetIn( preL + 1, preL + numLeft, postL, postL + numLeft - 1 );
-        else // 左子树为空那么很明显树不唯一
+        if( numLeft >= 1 ) { // 左子树有结点就递归处理左子树
+            GetIn( in, pre, post, preL + 1, i - 1, postL, postL + numLeft - 1 );
+        } else { // 没有左子树，也就是当前根结点只有一棵子树，那么整棵就不唯一
             flag = false;
-        in.push_back( post[postR] ); // 进栈当前根结点
-        GetIn( preL + numLeft + 1, preR, postL + numLeft, postR - 1 ); // 递归处理右子树
-    } // 结合中序遍历——左、根、右的特点递归处理左右子树
-}
+        }
+        in.push_back( pre[preL] ); // 入队当前根结点
+        GetIn( in, pre, post, i, preR, postL + numLeft, postR - 1 ); // 处理右子树
+    } // 结合中序遍历——左根右的特点递归处理左右子树
+} // 前序是根左右，后序是左右根，可以发现如果一个子树只有一个孩子，那么它是不唯一的
 
 int main( ) {
     int N;
     cin >> N;
-    pre.resize( N ), post.resize( N );
+    vector<int> in, pre( N ), post( N );
     for( int i = 0; i < N; i++ )
-        cin >> pre[i];
+        scanf( "%d", &pre[i] );
     for( int i = 0; i < N; i++ )
-        cin >> post[i];
-    GetIn( 0, N - 1, 0, N - 1 );
-    cout << ( flag ? "Yes" : "No" );
-    cout << endl << in[0];
+        scanf( "%d", &post[i] );
+    GetIn( in, pre, post, 0, N - 1, 0, N - 1 );
+    cout << ( flag ? "Yes" : "No" ) << endl;
+    printf( "%d", in[0] );
     for( int i = 1; i < N; i++ )
-        cout << " " << in[i];
-    cout << endl;
+        printf( " %d", in[i] );
+    printf( "\n" );
     return 0;
 }

@@ -1,37 +1,33 @@
 #include <iostream>
 #include <cstdio>
-#include <cstring>
 #include <vector>
-#define MAX 0x1fffffff
+#define INF 0x3fffffff
 using namespace std;
 struct node {
     int v, dis;
 };
-vector<vector<node>> G; // 邻接表
-int Matrix[1020][1020]; // 邻接矩阵
-vector<int> d, choices; // choices用来记录每步新找到最近的结点编号
+vector<vector<node>> G;
+vector<int> d, choices; // choices用来记录每步新找到最近的结点的距离
 vector<bool> visit;
-void Dijkstra( int N, int start ) {
-    fill( d.begin( ), d.end( ), MAX );
-    choices.clear( );
+void Dijkstra( const int &N, const int &start ) {
+    fill( d.begin( ), d.end( ), INF );
     fill( visit.begin( ), visit.end( ), false );
     d[start] = 0;
-    for( int i = 1; i <= N; i++ ) {
-        int u = -1, min = MAX;
-        for( int j = 1; j <= N; j++ ) {
-            if( d[j] < min && visit[j] == false ) {
+    for( int i = 0; i < N; i++ ) {
+        int u = -1, MIN = INF;
+        for( int j = 1; j <= N; j++ )
+            if( d[j] < MIN && visit[j] == false ) {
                 u = j;
-                min = d[j];
+                MIN = d[j];
             }
-        }
         if( u == -1 )
             break;
-        choices.push_back( min ); // 距离相等的情况下就编号优先了，所以得用距离来判断
         visit[u] = true;
+        choices.push_back( MIN ); // 距离相等的情况下就编号就不一定一样了，所以得用距离来判断
         for( int j = 0, v = 0; j < G[u].size( ); j++ ) {
             v = G[u][j].v;
             if( visit[v] == false && d[u] + G[u][j].dis < d[v] ) {
-                d[v] = d[u] + G[u][j].dis;
+                d[v] = G[u][j].dis + d[u];
             }
         }
     }
@@ -41,27 +37,25 @@ int main( ) {
     int N, M, K;
     cin >> N >> M;
     G.resize( N + 1 );
-    memset( Matrix, MAX, 1020 * 1020 );
     d.resize( N + 1 );
     visit.resize( N + 1 );
-    for( int i = 0, v1 = 0, v2 = 0, dis = 0; i < M; i++ ) {
-        scanf( "%d %d %d", &v1, &v2, &dis );
-        G[v1].emplace_back( node{ v2, dis } );
-        G[v2].emplace_back( node{ v1, dis } );
-        Matrix[v1][v2] = Matrix[v2][v1] = dis;
+    for( int i = 0, v = 0, v2 = 0, dis = 0; i < M; i++ ) {
+        scanf( "%d %d %d", &v, &v2, &dis );
+        G[v].emplace_back( node{ v2, dis } );
+        G[v2].emplace_back( node{ v, dis } );
     }
     cin >> K;
-    for( int i = 0; i < K; i++ ) {
-        vector<int> path( N );
+    for( int i = 0, start = 0; i < K; i++ ) {
+        scanf( "%d", &start );
+        choices.clear( );
+        Dijkstra( N, start );
         bool ans = true;
-        scanf( "%d", &path[0] );
-        Dijkstra( N, path[0] );
-        for( int j = 1; j < N; j++ ) {
-            scanf( "%d", &path[j] );
-            if( d[path[j]] != choices[j] ) // 由于可能有多条最短路径，所以要用距离来判断
+        for( int j = 1, v = 0; j < N; j++ ) {
+            scanf( "%d", &v );
+            if( d[v] != choices[j] ) // 由于可能有多条最短路径，所以要用距离来判断
                 ans = false;
         }
-        cout << ( ans ? "Yes" : "No" ) << endl;
+        printf( "%s\n", ans ? "Yes" : "No" );
     }
     return 0;
 }

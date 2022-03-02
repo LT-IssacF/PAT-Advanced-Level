@@ -4,12 +4,12 @@
 using namespace std;
 typedef struct BiNode {
     int data, level;
-    struct BiNode *lchild, *rchild;
+    BiNode *lchild, *rchild;
 } BiNode, *BiTree;
 vector<int> in, post;
 vector<BiTree> ans;
 
-BiTree Insert( int inL, int inR, int postL, int postR, int level ) {
+BiTree Insert( const int &inL, const int &inR, const int &postL, const int &postR, const int &level ) {
     if( postL > postR )
         return NULL;
     int numLeft, i;
@@ -17,7 +17,7 @@ BiTree Insert( int inL, int inR, int postL, int postR, int level ) {
         if( in[i] == post[postR] )
             break;
     numLeft = i - inL;
-    BiTree T = ( BiTree ) malloc( sizeof( struct BiNode ) );
+    BiTree T = ( BiTree ) malloc( sizeof( BiNode ) );
     T->data = post[postR], T->level = level;
     T->lchild = Insert( inL, i - 1, postL, postL + numLeft - 1, level + 1 );
     T->rchild = Insert( i + 1, inR, postL + numLeft, postR - 1, level + 1 );
@@ -43,11 +43,12 @@ void Print( const int &N ) {
     cout << ans[0]->data;
     if( ans.size( ) > 1 ) {
         for( int i = ans[1]->level, j = 1; i <= depth; i++ ) {
-            if( i % 2 == 0 ) // 偶数层顺序输出
+            if( i % 2 == 0 ) { // 偶数层顺序输出
                 while( j < N && ans[j]->level == i ) {
                     cout << " " << ans[j]->data;
                     j++;
-                } else { // 奇数层倒序输出
+                } 
+            } else { // 奇数层倒序输出
                 int cnt = 0; // 记录这一层的结点个数
                 while( j < N && ans[j]->level == i ) {
                     cnt++;

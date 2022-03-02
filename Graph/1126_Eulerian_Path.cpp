@@ -5,7 +5,7 @@
 using namespace std;
 vector<vector<int>> G; // 邻接表
 vector<bool> visit;
-void BFS( const int &start, int &oddgree ) {
+void BFS( const int &start, int &oddDegree ) {
     queue<int> q;
     q.push( start );
     visit[start] = true;
@@ -13,7 +13,7 @@ void BFS( const int &start, int &oddgree ) {
         int front = q.front( );
         int degree = G[front].size( );
         if( degree % 2 == 1 )
-            oddgree++;
+            oddDegree++;
         q.pop( );
         for( int i = 0; i < degree; i++ )
             if( visit[G[front][i]] == false ) {
@@ -44,11 +44,12 @@ int main( ) {
         cout << G[i].size( );
     }
     cout << endl;
-    if( isConnected && oddDegree == 0 )
+    if( isConnected && oddDegree == 0 ) {
         cout << "Eulerian";
-    else if( isConnected && oddDegree == 2 )
+    } else if( isConnected && oddDegree == 2 ) {
         cout << "Semi-Eulerian";
-    else
+    } else {
         cout << "Non-Eulerian";
+    }
     return 0;
 }

@@ -1,39 +1,42 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
+#include <algorithm>
 using namespace std;
 struct node {
     int address, data, next;
-} origin[100020];
+} list[100020];
 
 int main( ) {
     int start, start2, N, p, q;
     cin >> start >> start2 >> N;
-    for( int i = 0, add = 0; i < N; i++ ) {
-        scanf( "%d", &add );
-        origin[add].address = add;
-        scanf( "%d %d", &origin[add].data, &origin[add].next );
+    for( int i = 0, add = 0, data = 0, next = 0; i < N; i++ ) {
+        scanf( "%d %d %d", &add, &data, &next );
+        list[add].address = add, list[add].data = data, list[add].next = next;
     }
-    vector<node> list, list2, ans; // 从origin中获得较长的链表，再从list2中获得较短的那条
-    for( p = start; p != -1; p = origin[p].next )
-        list.emplace_back( origin[p] );
-    for( q = start2; q != -1; q = origin[q].next )
-        list2.emplace_back( origin[q] );
-    if( list.size( ) > list2.size( ) ) {
-        p = start;
-    } else { // 第二条链表比第一条长，就把短的放在list2
-        p = start2;
-        list2 = list;
-    }
-    for( q = 0; p != -1; p = origin[p].next ) { // 注意会出现长链表已遍历完但短链表还没有的情况，所以必需要用1+2的模式
-        ans.emplace_back( origin[p] ); // 即第一次循环加入第一个长链表的结点，第二次循环加入第二个长链表的结点和一个短链表的结点
-        if( ++q % 2 == 0 && !list2.empty( ) ) { // 每加入两个结点就加入一个list2的尾结点
-            ans.emplace_back( list2.back( ) );
-            list2.pop_back( );
+    vector<node> ans, ans2;
+    for( int p = start; p != -1; p = list[p].next )
+        ans.emplace_back( list[p] );
+    for( int p = start2; p != -1; p = list[p].next )
+        ans2.emplace_back( list[p] );
+    if( ans.size( ) < ans2.size( ) ) // 前者固定为长链表，后者为短链表
+        swap( ans, ans2 );
+    for( p = 0, q = ans2.size( ) - 1; q >= 0; q-- ) { // 短链表固定至少比长链表少2倍
+        printf( "%05d %d %05d\n", ans[p].address, ans[p].data, ans[p + 1].address ); // 长链表每块前一个结点，next是长链表后一个结点
+        printf( "%05d %d %05d\n", ans[p + 1].address, ans[p + 1].data, ans2[q].address ); // 长链表每块后一个结点，next是短链表的结点
+        p += 2;
+        if( p == ans.size( ) ) { // 如果长链表结束了，即没有多余的结点，那么next就为-1
+            printf( "%05d %d -1", ans2[q].address, ans2[q].data );
+        } else { // 有多余的
+            printf( "%05d %d %05d\n", ans2[q].address, ans2[q].data, ans[p].address );
         }
     }
-    for( int i = 0; i < ans.size( ) - 1; i++ )
-        printf( "%05d %d %05d\n", ans[i].address, ans[i].data, ans[i + 1].address );
-    printf( "%05d %d -1", ans.back( ).address, ans.back( ).data );
+    if( p < ans.size( ) ) { // 处理多余的
+        while( p < ans.size( ) - 1 ) {
+            printf( "%05d %d %05d\n", ans[p].address, ans[p].data, ans[p + 1].address );
+            p++;
+        }
+        printf( "%05d %d -1", ans[p].address, ans[p].data );
+    }
     return 0;
 }

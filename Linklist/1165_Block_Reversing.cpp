@@ -4,36 +4,31 @@
 using namespace std;
 struct node {
     int address, data, next;
-} origin[100020];
+} list[100020];
 
 int main( ) {
     int start, N, K;
     cin >> start >> N >> K;
-    for( int i = 0, add = 0; i < N; i++ ) {
-        scanf( "%d", &add );
-        origin[add].address = add;
-        scanf( "%d %d", &origin[add].data, &origin[add].next );
+    for( int i = 0, add = 0, data = 0, next = 0; i < N; i++ ) {
+        scanf( "%d %d %d", &add, &data, &next );
+        list[add].address = add, list[add].data = data, list[add].next = next;
     }
-    vector<node> list;
-    while( start != -1 ) { // 储存在链上的结点
-        list.emplace_back( origin[start] );
-        start = origin[start].next;
-    }
-    int blocks = list.size( ) / K, remnants = list.size( ) % K, end = list.size( ) - 1, p;
+    vector<node> ans; // 储存在链上的结点
+    for( int p = start; p != -1; p = list[p].next )
+        ans.emplace_back( list[p] );
+    int blocks = ans.size( ) / K, remnants = ans.size( ) % K;
     if( remnants > 0 ) { // 处理多余的结点
-        for( start = blocks * K; start < end; start++ )
-            printf( "%05d %d %05d\n", list[start].address, list[start].data, list[start + 1].address );
-        printf( "%05d %d %05d\n", list[start].address, list[start].data, list[start - remnants - K + 1].address );
-    }
-    for( int i = 0; i < blocks; i++ ) { // 分块处理
-        start = ( blocks - i - 1 ) * K;
-        end = start + K - 1;
-        for( p = start; p < end; p++ ) // 处理每块的非最后一个结点
-            printf( "%05d %d %05d\n", list[p].address, list[p].data, list[p + 1].address );
-        if( i != blocks - 1 ) { // 非首块的最后的结点
-            printf( "%05d %d %05d\n", list[p].address, list[p].data, list[start - K].address );
+        for( int i = ans.size( ) - remnants; i < ans.size( ) - 1; i++ )
+            printf( "%05d %d %05d\n", ans[i].address, ans[i].data, ans[i + 1].address );
+        printf( "%05d %d %05d\n", ans[ans.size( ) - 1].address, ans[ans.size( ) - 1].data, ans[( blocks - 1 ) * K].address );
+    } // 题目说明至少会有一块，不用考虑不够一块的情况
+    for( int i = blocks - 1, j = 0, cnt = 0; i >= 0; i-- ) { // 分块处理
+        for( j = i * K, cnt = 0; cnt < K - 1; j++, cnt++ ) // 处理每块的非最后一个结点
+            printf( "%05d %d %05d\n", ans[j].address, ans[j].data, ans[j + 1].address );
+        if( i > 0 ) { // 非首块的最后的结点
+            printf( "%05d %d %05d\n", ans[j].address, ans[j].data, ans[( i - 1 ) * K].address );
         } else { // 首块的最后一个结点
-            printf( "%05d %d -1\n", list[p].address, list[p].data );
+            printf( "%05d %d -1", ans[j].address, ans[j].data );
         }
     }
     return 0;

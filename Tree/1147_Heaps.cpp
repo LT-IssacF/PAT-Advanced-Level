@@ -6,8 +6,7 @@ struct node {
     int data, lchild, rchild;
 };
 vector<node> tree;
-vector<int> arr;
-void PostOrder( int root, int start ) {
+void PostOrder( const int &root, const int &start ) {
     if( start == 0 )
         return;
     PostOrder( root, tree[start].lchild );
@@ -18,8 +17,8 @@ void PostOrder( int root, int start ) {
 int main( ) {
     int M, N;
     cin >> M >> N;
+    vector<int> arr( N + 1 );
     tree.resize( N + 1 );
-    arr.resize( N + 1 );
     for( int i = 0, j = 1, key = 0; i < M; i++ ) {
         for( j = 1; j <= N; j++ ) {
             scanf( "%d", &arr[j] );

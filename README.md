@@ -1,5 +1,7 @@
 <h1 align = "center">PAT-Advanced-Level</h1>
 
+commands: g++ xxxx_xxxx.cpp then ./a in terminal
+
 * Advanced-Simulate
 * [Binary-Search](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Binary_Search)
 * [Dynamic-Programing](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Dynamic-Programing)

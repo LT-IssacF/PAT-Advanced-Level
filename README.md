@@ -11,7 +11,7 @@ commands: g++ xxxx_xxxx.cpp then ./a in terminal
 * [Iteration](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Iteration)
 * Hash
 * [Linklist](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Linklist)
-* Mathematical
+* [Mathematical](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Mathematical)
 * Search
 * [Shortest-Distance](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Shortest-Distance)
 * [Simple-Simulate](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Simple-Simulate)

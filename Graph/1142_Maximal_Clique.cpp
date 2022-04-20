@@ -1,51 +1,56 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include <map>
+#include <unordered_map>
 using namespace std;
-vector<vector<int>> G; // 邻接表
 
 int main( ) {
-    int N, M, K;
+    int N, M;
     cin >> N >> M;
-    G.resize( N + 1 );
-    for( int i = 0, v1 = 0, v2 = 0; i < M; i++ ) {
-        scanf( "%d %d", &v1, &v2 );
-        G[v1].push_back( v2 );
-        G[v2].push_back( v1 );
+    bool G[201][201] = { false }; // 用邻接矩阵判断效率更好
+    for( int i = 0, v = 0, v2 = 0; i < M; i++ ) {
+        scanf( "%d %d", &v, &v2 );
+        G[v][v2] = G[v2][v] = true;
     }
-    cin >> K;
-    for( int i = 0, cnt = 0; i < K; i++ ) {
-        scanf( "%d", &cnt ); // 给定的clique中结点的数量
-        map<int, bool> visit; // 标记提供的clique的结点
-        bool isClique = false, isMaximal = true;
-        for( int j = 0, v = 0; j < cnt; j++ ) {
+    cin >> M;
+    for( int i = 0, K = 0; i < M; i++ ) {
+        scanf( "%d", &K );
+        bool isClique = true, isMaximal = true;
+        vector<int> tmp; // 记录clique结点编号
+        unordered_map<int, bool> appearance; // 标记结点已出现
+        for( int j = 0, v = 0; j < K; j++ ) {
             scanf( "%d", &v );
-            visit[v] = true; // 标记
+            appearance[v] = true;
+            for( const auto &v2 : tmp ) { // clique每进来一个结点就与之前的每个结点判断有无边
+                if( isClique == false || G[v][v2] == false ) {
+                    isClique = false;
+                    break;
+                }
+            }
+            tmp.push_back( v );
         }
-        int sumOfEdges = 0; // 给定结点们连向彼此的边的总数
-        for( int j = 1; j <= N; j++ )
-            if( visit[j] == true ) // 是给定的结点
-                for( int k = 0; k < G[j].size( ); k++ ) // 遍历j所有的边
-                    if( visit[G[j][k]] == true )
-                        sumOfEdges++;
-        if( sumOfEdges == cnt * ( cnt - 1 ) ) { // 判断给定的clique是不是完全无向图
-            isClique = true;
-            for( int j = 1; j <= N; j++ ) { // 开始访问除clique以外图剩下的结点
-                int connectToClique = 0; // j连向clique任意结点的边数
-                if( visit[j] == false ) { // j是剩下的结点
-                    for( int k = 0; k < G[j].size( ); k++ ) { // 遍历j所有的边
-                        if( visit[G[j][k]] == true ) // 是连向clique其中某结点的边
-                            connectToClique++;
+        if( isClique == false ) {
+            printf( "Not a Clique\n" );
+        } else { // 是clique
+            for( int j = 1; j <= N && isMaximal == true; j++ ) { // 从1开始挨个试是否能加入clique
+                if( appearance.find( j ) == appearance.end( ) ) { // 必须是非原clique结点
+                    int cnt = 0; // 与clique中结点有边的计数器
+                    for( const int &v : tmp ) {
+                        if( G[j][v] == true ) {
+                            cnt++;
+                        }
                     }
-                    if( connectToClique == cnt ) { // 遍历完j所有的边发现自己与clique所有顶点都有边
-                        isMaximal = false; // 那么j也可以是clique的一员即不是Maximal
-                        break;
+                    if( cnt == K ) { // 与原clique每个结点都有边就不是Maximal
+                        isMaximal = false;
                     }
                 }
             }
+            if( isMaximal == true ) {
+                printf( "Yes\n" );
+            } else {
+                printf( "Not Maximal\n" );
+            }
         }
-        cout << ( isClique ? ( isMaximal ? "Yes" : "Not Maximal" ) : "Not a Clique" ) << endl;
     }
     return 0;
 }

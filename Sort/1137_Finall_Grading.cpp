@@ -1,59 +1,62 @@
 #include <iostream>
-#include <string>
+#include <cstdio>
 #include <vector>
-#include <cmath>
+#include <string>
 #include <unordered_map>
 #include <algorithm>
 using namespace std;
 struct Record {
     string id;
-    int program_score = 0, mid_score = -1, final_score = 0, score = 0;
-    bool certificate = false; // 有无资格获得证书
+    int programing = -1, mid = -1, final = -1, grade = -1;
 };
-vector<Record> stu;
-unordered_map<string, int> excel; // id与在stu数组中序号的映射
-bool cmp( const Record &a, const Record &b ) {
-    if( a.certificate != b.certificate ) { // 有证书的排前面，没证书的排后面
-        return a.certificate > b.certificate;
-    } else if( a.score != b.score ) { // 比最终成绩
-        return a.score > b.score;
-    } else { // 比id的字典序
-        return a.id < b.id;
-    }
-}
-
+// 题目中的final grade不是期末考试！！！
 int main( ) {
-    int P, M, N, cnt = 0;
+    int P, M, N;
     cin >> P >> M >> N;
-    stu.resize( P ); // 必需有平台上的编程成绩才有可能获得证书
-    for( int i = 0; i < P; i++ ) {
-        cin >> stu[i].id >> stu[i].program_score;
-        excel[stu[i].id] = i; // 建立映射
-    }
     string id;
-    for( int i = 0, score = 0; i < M; i++ ) {
-        cin >> id >> score;
-        auto it = excel.find( id );
-        if( it != excel.end( ) ) // 只有有编程成绩后面的卷面成绩才有意义
-            stu[it->second].mid_score = score;
+    vector<Record> ans;
+    unordered_map<string, Record> stu;
+    for( int i = 0, grade = 0; i < P; i++ ) {
+        cin >> id >> grade;
+        if( grade > 900 ) {
+            grade = 900;
+        }
+        stu[id].programing = grade;
     }
-    for( int i = 0, score = 0; i < N; i++ ) {
-        cin >> id >> score;
-        auto it = excel.find( id );
-        if( it != excel.end( ) ) // 只有有编程成绩后面的卷面成绩才有意义
-            stu[it->second].final_score = score;
+    for( int i = 0, grade = 0; i < M; i++ ) {
+        cin >> id >> grade;
+        if( grade > 100 ) {
+            grade = 100;
+        }
+        stu[id].mid = grade;
     }
-    for( int i = 0; i < P; i++ ) {
-        if( stu[i].program_score >= 200 ) { // 编程成绩至少200分
-            stu[i].score = ( stu[i].final_score >= stu[i].mid_score ) ? stu[i].final_score : ( int )round( stu[i].mid_score * 0.4 + stu[i].final_score * 0.6 );
-            if( stu[i].score >= 60 ) { // 就有资格获得证书了
-                stu[i].certificate = true;
-                cnt++; // 人数+1
+    for( int i = 0, grade = 0; i < N; i++ ) {
+        cin >> id >> grade;
+        if( grade > 100 ) {
+            grade = 100;
+        }
+        stu[id].final = grade;
+        if( stu[id].programing >= 200 ) { // 编程分数必须大于等于200
+            if( stu[id].final >= stu[id].mid ) {
+                stu[id].grade = stu[id].final;
+            } else {
+                stu[id].grade = stu[id].mid * 0.4 + stu[id].final * 0.6 + 0.5;
             }
-        } // 最终成绩 = ( 期末成绩 >= 期中成绩 ) ? 期末成绩 : ( 期中成绩的40% +  期末成绩的60% )
+            if( stu[id].grade >= 60 ) { // 最后final grade必须大于等于60
+                stu[id].id = id;
+                ans.emplace_back( stu[id] );
+            }
+        }
     }
-    sort( stu.begin( ), stu.end( ), cmp );
-    for( int i = 0; i < cnt; i++ )
-        cout << stu[i].id << " " << stu[i].program_score << " " << stu[i].mid_score << " " << stu[i].final_score << " " << stu[i].score << endl;
+    sort( ans.begin( ), ans.end( ), [] ( const Record &a, const Record &b ) {
+        if( a.grade != b.grade ) {
+            return a.grade > b.grade;
+        } else {
+            return a.id < b.id;
+        }
+    } );
+    for( const Record &i : ans ) {
+        printf( "%s %d %d %d %d\n", i.id.c_str( ), i.programing, i.mid, i.final, i.grade );
+    }
     return 0;
 }

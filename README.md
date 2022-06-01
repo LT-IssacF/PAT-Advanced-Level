@@ -12,7 +12,7 @@ commands: g++ xxxx_xxxx.cpp then ./a in terminal
 * Hash
 * [Linklist](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Linklist)
 * [Mathematical](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Mathematical)
-* Search
+* [Search](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Search)
 * [Shortest-Distance](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Shortest-Distance)
 * [Simple-Simulate](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Simple-Simulate)
 * [Sort](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Sort)

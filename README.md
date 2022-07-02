@@ -9,7 +9,7 @@ commands: g++ xxxx_xxxx.cpp then ./a in terminal
 * Graph-Output
 * [Greedy](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Greedy)
 * [Iteration](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Iteration)
-* Hash
+* [Hash](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Hash)
 * [Linklist](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Linklist)
 * [Mathematical](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Mathematical)
 * [Search](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Search)
@@ -18,4 +18,4 @@ commands: g++ xxxx_xxxx.cpp then ./a in terminal
 * [Sort](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Sort)
 * String
 * [Tree](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Tree)
-* Two-Points
+* [Two-Points](https://github.com/LT-IssacF/PAT-Advanced-Level/tree/main/Two_Points)

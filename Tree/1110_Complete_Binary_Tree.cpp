@@ -1,35 +1,35 @@
-#include <iostream>
 #include <cstdio>
-#include <vector>
+#include <iostream>
 #include <queue>
+#include <vector>
 using namespace std;
 struct node {
     int lchild, rchild;
 };
-int CharToInt( const string &str, vector<bool> &hashTable ) { // 把数据转换成整型
-    if( str[0] == '-' )
+int CharToInt(const string &str, vector<bool> &hashTable) { // 把数据转换成整型
+    if (str[0] == '-')
         return -1; // 无孩子就标记为-1
-    int length = str.length( ), ans = 0;
-    for( int i = length - 1, exponent = 1; i >= 0; i--, exponent *= 10 ) {
-        ans += ( str[i] - '0' ) * exponent;
+    int length = str.length(), ans = 0;
+    for (int i = length - 1, exponent = 1; i >= 0; i--, exponent *= 10) {
+        ans += (str[i] - '0') * exponent;
     }
     hashTable[ans] = true;
     return ans;
 }
 
-int main( ) {
+int main() {
     int N, root, front;
     cin >> N;
-    vector<node> tree( N );
-    vector<bool> hashTable( N, false );
-    for( int i = 0; i < N; i++ ) {
+    vector<node> tree(N);
+    vector<bool> hashTable(N, false);
+    for (int i = 0; i < N; i++) {
         string left, right;
         cin >> left >> right;
-        tree[i].lchild = CharToInt( left, hashTable );
-        tree[i].rchild = CharToInt( right, hashTable );
+        tree[i].lchild = CharToInt(left, hashTable);
+        tree[i].rchild = CharToInt(right, hashTable);
     }
-    for( int i = 0; i < N; i++ ) // 找根
-        if( !hashTable[i] ) {
+    for (int i = 0; i < N; i++) // 找根
+        if (!hashTable[i]) {
             root = i;
             break;
         }
@@ -37,26 +37,26 @@ int main( ) {
     // 往后继续遍历时，若出现某结点的任意一个孩子不为空则不是完全二叉树
     bool shouldBeComplete = true, startToCheck = false; // 分别为是否是完全二叉树和是否开始检查
     queue<int> q;
-    q.push( root );
-    while( !q.empty( ) ) {
-        front = q.front( );
-        q.pop( );
-        if( tree[front].lchild == -1 && tree[front].rchild != -1 ) { // 左空右不空一定不是完全二叉树
+    q.push(root);
+    while (!q.empty()) {
+        front = q.front();
+        q.pop();
+        if (tree[front].lchild == -1 && tree[front].rchild != -1) { // 左空右不空一定不是完全二叉树
             shouldBeComplete = false;
             break;
         } // 检查本轮
-        if( startToCheck && ( tree[front].lchild != -1 || tree[front].rchild != -1 ) ) {
+        if (startToCheck && (tree[front].lchild != -1 || tree[front].rchild != -1)) {
             shouldBeComplete = false;
             break;
         } // 开始检查了，发现有结点的任意孩子为空
-        if( tree[front].lchild != -1 )
-            q.push( tree[front].lchild );
-        if( tree[front].rchild != -1 )
-            q.push( tree[front].rchild );
-        if( tree[front].lchild == -1 || tree[front].rchild == -1 ) // 两个孩子任意为空下一轮就开始检查
+        if (tree[front].lchild != -1)
+            q.push(tree[front].lchild);
+        if (tree[front].rchild != -1)
+            q.push(tree[front].rchild);
+        if (tree[front].lchild == -1 || tree[front].rchild == -1) // 两个孩子任意为空下一轮就开始检查
             startToCheck = true;
     }
-    if( shouldBeComplete ) {
+    if (shouldBeComplete) {
         cout << "YES " << front;
     } else {
         cout << "NO " << root;

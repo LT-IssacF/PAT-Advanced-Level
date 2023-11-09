@@ -1,5 +1,5 @@
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 #include <vector>
 using namespace std;
 typedef struct BiNode {
@@ -7,82 +7,81 @@ typedef struct BiNode {
     BiNode *lchild, *rchild;
 } BiNode, *BiTree;
 vector<int> input, pre, post, mirPre, mirPost;
-void Insert( BiTree &T, const int &key ) { // 插入
-    if( T == NULL ) {  // 插入位置
-        T = ( BiTree ) malloc ( sizeof( BiNode ) );
+void Insert(BiTree &T, const int &key) { // 插入
+    if (T == NULL) { // 插入位置
+        T = (BiTree)malloc(sizeof(BiNode));
         T->data = key;
         T->lchild = T->rchild = NULL;
         return;
-    } else if( key < T->data ) {
-        Insert( T->lchild, key );
+    } else if (key < T->data) {
+        Insert(T->lchild, key);
     } else {
-        Insert( T->rchild, key );
+        Insert(T->rchild, key);
     }
 }
 
-void PreOrder( const BiTree &T ) {
-    if( T == NULL )
+void PreOrder(const BiTree &T) {
+    if (T == NULL)
         return;
-    pre.push_back( T->data );
-    PreOrder( T->lchild );
-    PreOrder( T->rchild );
+    pre.push_back(T->data);
+    PreOrder(T->lchild);
+    PreOrder(T->rchild);
 }
 
-void PostOrder( const BiTree &T ) {
-    if( T == NULL )
+void PostOrder(const BiTree &T) {
+    if (T == NULL)
         return;
-    PostOrder( T->lchild );
-    PostOrder( T->rchild );
-    post.push_back( T->data );
+    PostOrder(T->lchild);
+    PostOrder(T->rchild);
+    post.push_back(T->data);
 }
 
-void MirPreOrder( const BiTree &T ) {
-    if( T == NULL )
+void MirPreOrder(const BiTree &T) {
+    if (T == NULL)
         return;
-    mirPre.push_back( T->data );
-    MirPreOrder( T->rchild );
-    MirPreOrder( T->lchild );
+    mirPre.push_back(T->data);
+    MirPreOrder(T->rchild);
+    MirPreOrder(T->lchild);
 }
 
-void MirPostOrder( const BiTree &T ) {
-    if( T == NULL )
+void MirPostOrder(const BiTree &T) {
+    if (T == NULL)
         return;
-    MirPostOrder( T->rchild );
-    MirPostOrder( T->lchild );
-    mirPost.push_back( T->data );
+    MirPostOrder(T->rchild);
+    MirPostOrder(T->lchild);
+    mirPost.push_back(T->data);
 }
 
-void Print( const vector<int> &sequence ) {
-    for( const int &i : sequence ) {
-        if( i != sequence[0] )
-            printf( " " );
-        printf( "%d", i );
+void Print(const vector<int> &sequence) {
+    for (const int &i : sequence) {
+        if (i != sequence[0])
+            printf(" ");
+        printf("%d", i);
     }
 }
 
-int main( ) {
+int main() {
     int N;
     cin >> N;
     BiTree T = NULL;
-    for( int i = 0, data = 0; i < N; i++ ) {
-        scanf( "%d", &data );
-        Insert( T, data ); // 每次调用都从树根处递归建树
-        input.push_back( data );
+    for (int i = 0, data = 0; i < N; i++) {
+        scanf("%d", &data);
+        Insert(T, data); // 每次调用都从树根处递归建树
+        input.push_back(data);
     }
-    PreOrder( T );
-    if( pre == input ) {
-        printf( "YES\n" );
-        PostOrder( T );
-        Print( post );
+    PreOrder(T);
+    if (pre == input) {
+        printf("YES\n");
+        PostOrder(T);
+        Print(post);
     } else {
-        MirPreOrder( T );
-        if( mirPre == input ) {
-            printf( "YES\n" );
-            MirPostOrder( T );
-            Print( mirPost );
-        }
-        else {
-            printf( "NO" );
+        MirPreOrder(T);
+        if (mirPre == input) {
+            printf("YES\n");
+            MirPostOrder(T);
+            Print(mirPost);
+        } else {
+            printf("NO");
         }
     }
     return 0;

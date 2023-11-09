@@ -1,8 +1,8 @@
-#include <iostream>
-#include <cstdio>
-#include <vector>
-#include <map>
 #include <algorithm>
+#include <cstdio>
+#include <iostream>
+#include <map>
+#include <vector>
 #define WORSE 0xffff
 using namespace std;
 struct Record {
@@ -11,49 +11,54 @@ struct Record {
 };
 map<int, Record> ans;
 
-int main( ) {
+int main() {
     int N, M;
     cin >> N >> M;
-    vector<Record> stu( N );
-    for( int i = 0; i < N; i++ ) {
-        scanf( "%d", &stu[i].id );
-        for( int j = 1; j <= 3; j++ ) {
-            scanf( "%d", &stu[i].grade[j] );
+    vector<Record> stu(N);
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &stu[i].id);
+        for (int j = 1; j <= 3; j++) {
+            scanf("%d", &stu[i].grade[j]);
             stu[i].grade[0] += stu[i].grade[j];
         }
     }
-    for( int tag = 0; tag < 4; tag++ ) { // 获取4门成绩的排名
-        sort( stu.begin( ), stu.end( ),
-            [tag] ( const Record &a, const Record &b ) {
-            return a.grade[tag] > b.grade[tag];
-        } ); // 按每门成绩降序排序
+    for (int tag = 0; tag < 4; tag++) { // 获取4门成绩的排名
+        sort(stu.begin(), stu.end(), [tag](const Record &a, const Record &b) { return a.grade[tag] > b.grade[tag]; }); // 按每门成绩降序排序
         stu[0].rank[tag] = 1; // 最高分第一名
-        if( stu[0].best_rank > 1 ) // 如果他最好的排名不是第一的话就要更新
+        if (stu[0].best_rank > 1) // 如果他最好的排名不是第一的话就要更新
             stu[0].best_rank = 1, stu[0].best_sub = tag;
-        for( int i = 1; i < N; i++ ) {
-            if( stu[i].grade[tag] == stu[i - 1].grade[tag] ) {
+        for (int i = 1; i < N; i++) {
+            if (stu[i].grade[tag] == stu[i - 1].grade[tag]) {
                 stu[i].rank[tag] = stu[i - 1].rank[tag];
             } else {
                 stu[i].rank[tag] = i + 1;
             }
-            if( stu[i].best_rank > stu[i].rank[tag] ) // 同理
+            if (stu[i].best_rank > stu[i].rank[tag]) // 同理
                 stu[i].best_rank = stu[i].rank[tag], stu[i].best_sub = tag;
         }
     }
-    for( int i = 0; i < N; i++ ) // 建立映射
+    for (int i = 0; i < N; i++) // 建立映射
         ans[stu[i].id] = stu[i];
-    for( int i = 0, id = 0; i < M; i++ ) {
-        scanf( "%d", &id );
-        map<int, Record>::iterator it = ans.find( id );
-        if( it == ans.end( ) ) {
-            printf( "N/A\n" );
+    for (int i = 0, id = 0; i < M; i++) {
+        scanf("%d", &id);
+        map<int, Record>::iterator it = ans.find(id);
+        if (it == ans.end()) {
+            printf("N/A\n");
         } else {
-            printf( "%d ", it->second.best_rank );
-            switch( it->second.best_sub ) {
-            case 0: printf( "A\n" ); break;
-            case 1: printf( "C\n" ); break;
-            case 2: printf( "M\n" ); break;
-            case 3: printf( "E\n" ); break;
+            printf("%d ", it->second.best_rank);
+            switch (it->second.best_sub) {
+            case 0:
+                printf("A\n");
+                break;
+            case 1:
+                printf("C\n");
+                break;
+            case 2:
+                printf("M\n");
+                break;
+            case 3:
+                printf("E\n");
+                break;
             }
         }
     }

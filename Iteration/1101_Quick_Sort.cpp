@@ -1,32 +1,38 @@
-#include <iostream>
+#include <algorithm>
 #include <cstdio>
+#include <iostream>
 #include <vector>
-#define INF 0x3fffffff
 using namespace std;
-vector<int> arr, leftMax, rightMin, ans;
-// leftMax[i]为i左边最大的元素，rightMin[i]为i右边最小的元素
-int main( ) {
+// leftBigger[i]表示第i个数左边有没有比它更大的数，rightSmaller同理
+int main() {
     int N;
     cin >> N;
-    arr.resize( N ), leftMax.resize( N ), rightMin.resize( N );
-    fill( rightMin.begin( ), rightMin.end( ), INF );
-    for( int i = 0; i < N; i++ )
-        scanf( "%d", &arr[i] );
-    for( int i = 1; i < N; i++ ) // leftMax[i]等于leftMax[i - 1]和arr[i - 1]中较大的那个
-        leftMax[i] = max( leftMax[i - 1], arr[i - 1] );
-    for( int i = N - 2; i >= 0; i-- ) // rightMin[i]等于rightMin[i + 1]和arr[i + 1]中较小的那个
-        rightMin[i] = min( rightMin[i + 1], arr[i + 1] );
-    for( int i = 0; i < N; i++ ) {
-        if( leftMax[i] <= arr[i] && arr[i] <= rightMin[i] )
-            ans.push_back( arr[i] );
+    vector<int> arr(N), ans;
+    vector<bool> leftBigger(N, false), rightSmaller(N, false); // 边界leftBigger[0]和rightSmaller[N - 1]都为false
+    for (int i = 0, MAX = 0; i < N; i++) {
+        scanf("%d", &arr[i]);
+        if (arr[i] > MAX) { // 当前数比左边的数都大
+            MAX = arr[i]; // leftBigger[i] = false
+        } else { // 左边有比当前数更大的数
+            leftBigger[i] = true;
+        }
     }
-    int size = ans.size( );
-    cout << size << endl;
-    if( size > 0 )
-        cout << ans[0];
-    else // 还要再输出一个换行，吐了
-        cout << endl;
-    for( int i = 1; i < size; i++ )
-        printf( " %d", ans[i] );
+    for (int i = N - 1, MIN = 0x7fffffff; i >= 0; i--) {
+        if (MIN > arr[i]) { // 当前数比右边的数都小
+            MIN = arr[i]; // rightSmaller[i] = false
+        } else { // 右边有比当前数更小的数
+            rightSmaller[i] = true;
+        }
+        if (leftBigger[i] == false && rightSmaller[i] == false)
+            ans.push_back(arr[i]);
+    }
+    if (ans.size() == 0) {
+        printf("0\n\n");
+    } else {
+        sort(ans.begin(), ans.end());
+        printf("%d\n%d", ans.size(), ans[0]);
+        for (int i = 1; i < ans.size(); i++)
+            printf(" %d", ans[i]);
+    }
     return 0;
 }
